@@ -11,21 +11,115 @@ OpenReform enables supporters to fund petitions into escrow with milestone-based
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
+```mermaid
+flowchart TB
+    subgraph Frontend["🖥️ Frontend (Module C)"]
+        UI[Next.js dApp]
+        Wallet[wagmi + viem]
+    end
+
+    subgraph Indexer["⚙️ Indexer API (Module B)"]
+        API[REST API<br/>Port 3001]
+        IDX[Event Indexer]
+        IPFS[IPFS Pinning<br/>Pinata]
+    end
+
+    subgraph Blockchain["⛓️ Ethereum Sepolia"]
+        PR[PetitionRegistry]
+        IR[ImplementerRegistry]
+        EM[EscrowMilestones]
+    end
+
+    subgraph Storage["📦 IPFS Network"]
+        Content[Petition Content]
+        Proofs[Milestone Proofs]
+    end
+
+    UI --> Wallet
+    Wallet --> PR & IR & EM
+    UI --> API
+    API --> IPFS
+    IPFS --> Content & Proofs
+    IDX --> PR & IR & EM
+    PR & IR & EM --> IDX
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        OpenReform Platform                       │
-├─────────────────┬──────────────────────┬────────────────────────┤
-│   Module A      │      Module B        │      Module C          │
-│   Contracts     │    Indexer + API     │      Frontend          │
-├─────────────────┼──────────────────────┼────────────────────────┤
-│ • PetitionReg   │ • Event Indexer      │ • Next.js + wagmi      │
-│ • EscrowMiles   │ • REST API           │ • Wallet Connect       │
-│ • ImplementerReg│ • IPFS Pinning       │ • Petition UI          │
-└─────────────────┴──────────────────────┴────────────────────────┘
-         ▼                    ▼                      ▼
-    Sepolia Testnet      localhost:3001          localhost:3000
+
+---
+
+## 🔄 Data Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API as Indexer API
+    participant IPFS
+    participant SC as Smart Contracts
+
+    Note over User,SC: Create Petition Flow
+    User->>Frontend: Create petition
+    Frontend->>API: POST /api/ipfs/pin
+    API->>IPFS: Pin content
+    IPFS-->>API: Return CID
+    API-->>Frontend: Return CID + gateway
+    Frontend->>SC: createPetition(CID)
+    SC-->>Frontend: PetitionCreated event
+
+    Note over User,SC: Support & Fund Flow
+    User->>Frontend: Support + Fund
+    Frontend->>SC: support() + fund()
+    SC-->>API: Supported + Funded events
+    API-->>Frontend: GET /timeline updates
+
+    Note over User,SC: Implementation Flow
+    User->>SC: acceptImplementer()
+    User->>API: POST /api/ipfs/pin (proof)
+    User->>SC: submitMilestone(proofCID)
+    SC-->>API: Events indexed
+```
+
+---
+
+## 📊 Contract Interactions
+
+```mermaid
+flowchart LR
+    subgraph Contracts
+        PR[PetitionRegistry]
+        IR[ImplementerRegistry]
+        EM[EscrowMilestones]
+    end
+
+    PR --> |getPetition| EM
+    IR --> |getProfile| EM
+    
+    U1((Creator)) --> |createPetition| PR
+    U2((Supporter)) --> |support| PR
+    U3((Funder)) --> |fund| EM
+    U4((Implementer)) --> |setProfile| IR
+    U4 --> |acceptImplementer| EM
+    U4 --> |submitMilestone| EM
+    U5((Voters)) --> |voteOnMilestone| EM
+    U5 --> |finalizeMilestone| EM
+```
+
+---
+
+## 🎯 Petition Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Created: createPetition()
+    Created --> Active: support() / fund()
+    Active --> Accepted: acceptImplementer()
+    Accepted --> InProgress: submitMilestone()
+    InProgress --> InProgress: More milestones
+    InProgress --> Completed: All milestones approved
+    Active --> Refunded: Deadline passed
+    Completed --> [*]
+    Refunded --> [*]
 ```
 
 ---
@@ -110,7 +204,30 @@ Response:
 
 ## ⚡ Smart Contract Events
 
-All events are indexed and available via the API:
+```mermaid
+flowchart LR
+    subgraph Events
+        E1[PetitionCreated]
+        E2[Supported]
+        E3[Funded]
+        E4[ImplementerAccepted]
+        E5[MilestoneSubmitted]
+        E6[MilestoneApproved]
+        E7[PayoutReleased]
+        E8[RefundsClaimed]
+    end
+
+    E1 --> IDX[Indexer]
+    E2 --> IDX
+    E3 --> IDX
+    E4 --> IDX
+    E5 --> IDX
+    E6 --> IDX
+    E7 --> IDX
+    E8 --> IDX
+    IDX --> API[REST API]
+    API --> FE[Frontend]
+```
 
 | Event | Description |
 |-------|-------------|
@@ -151,20 +268,6 @@ npm run build    # Production build
 npm start        # Production server
 ```
 
-### Environment Variables
-
-**indexer-api/.env:**
-```env
-PORT=3001
-SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
-CHAIN_ID=11155111
-PETITION_REGISTRY_ADDRESS=0x7D377A56642aaE04A883A2f99F876F5b5142399e
-ESCROW_MILESTONES_ADDRESS=0x1a7a1e26dc55063f6b485619B7BAa86a222EFd5D
-IMPLEMENTER_REGISTRY_ADDRESS=0x5ce5bd6b6E6bDDFC71C1a4d64bc159E28bf909bf
-PINATA_API_KEY=your_key
-PINATA_SECRET_KEY=your_secret
-```
-
 ---
 
 ## 📁 Project Structure
@@ -187,17 +290,6 @@ OpenReform/
 │   └── deployed-addresses.json
 └── README.md
 ```
-
----
-
-## 🎯 Demo Flow
-
-1. **Create Petition** → Upload content to IPFS → Store CID on-chain
-2. **Support & Fund** → Multiple wallets support and fund the petition
-3. **Accept Implementation** → Implementer accepts with profile CID
-4. **Submit Milestones** → Implementer submits proof CIDs
-5. **Approve & Payout** → Funders vote, milestone approved, ETH released
-6. **Timeline Updates** → All events visible in the dApp
 
 ---
 
