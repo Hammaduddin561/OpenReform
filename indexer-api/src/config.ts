@@ -46,4 +46,5 @@ export const config = {
     // Indexer
     indexerStartBlock: Number(process.env.INDEXER_START_BLOCK) || 0,
     indexerPollIntervalMs: Number(process.env.INDEXER_POLL_INTERVAL_MS) || 15000,
+    indexerEnableRealtime: process.env.INDEXER_ENABLE_REALTIME === 'true',
 };

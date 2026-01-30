@@ -67,12 +67,21 @@ export async function startIndexer(): Promise<void> {
         const currentBlock = await p.getBlockNumber();
         console.log(`[Indexer] Connected to Sepolia, current block: ${currentBlock}`);
 
-        if (getLastIndexedBlock() === 0 && config.indexerStartBlock > 0) {
-            setLastIndexedBlock(config.indexerStartBlock);
+        if (getLastIndexedBlock() === 0) {
+            if (config.indexerStartBlock > 0) {
+                setLastIndexedBlock(config.indexerStartBlock);
+            } else {
+                // Avoid huge catch-up scans on first boot unless a start block is provided.
+                setLastIndexedBlock(currentBlock);
+            }
         }
 
-        // Set up event listeners for each contract
-        await setupContractListeners();
+        if (config.indexerEnableRealtime) {
+            // Set up event listeners for each contract
+            await setupContractListeners();
+        } else {
+            console.log('[Indexer] Realtime listeners disabled (INDEXER_ENABLE_REALTIME=false)');
+        }
 
         // Start polling for past events
         await catchUpFromLastBlock();

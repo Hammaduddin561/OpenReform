@@ -81,7 +81,11 @@ async function start() {
 
         // Start the on-chain indexer
         console.log('[Server] Starting indexer...');
-        await startIndexer();
+        try {
+            await startIndexer();
+        } catch (error) {
+            console.error('[Server] Indexer failed to start, continuing without it:', error);
+        }
 
         // Start Express server
         app.listen(config.port, () => {
