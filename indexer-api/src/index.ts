@@ -69,9 +69,15 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 // ===== Start Server =====
 async function start() {
     try {
-        // Add mock data for demo purposes
-        console.log('[Server] Adding mock data for demo...');
-        addMockData();
+        const contractsConfigured = Boolean(
+            config.petitionRegistryAddress && config.escrowMilestonesAddress,
+        );
+
+        if (!contractsConfigured) {
+            // Add mock data for demo purposes
+            console.log('[Server] Adding mock data for demo...');
+            addMockData();
+        }
 
         // Start the on-chain indexer
         console.log('[Server] Starting indexer...');

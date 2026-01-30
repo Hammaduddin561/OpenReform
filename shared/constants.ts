@@ -3,16 +3,24 @@
  * These values are used by frontend, indexer, and contracts.
  */
 
+import deployedAddresses from "./deployed-addresses.json";
+
 // ===== Chain Configuration =====
 export const CHAIN_ID = 11155111; // Sepolia testnet
 export const CHAIN_NAME = 'Sepolia';
 
 // ===== Contract Addresses =====
 // TODO: Update these after Module A deploys contracts
+const defaultAddresses = deployedAddresses ?? {
+    petitionRegistry: "",
+    escrowMilestones: "",
+    implementerRegistry: "",
+};
+
 export const CONTRACT_ADDRESSES = {
-    petitionRegistry: process.env.PETITION_REGISTRY_ADDRESS || '',
-    escrowMilestones: process.env.ESCROW_MILESTONES_ADDRESS || '',
-    implementerRegistry: process.env.IMPLEMENTER_REGISTRY_ADDRESS || '',
+    petitionRegistry: process.env.PETITION_REGISTRY_ADDRESS || defaultAddresses.petitionRegistry || "",
+    escrowMilestones: process.env.ESCROW_MILESTONES_ADDRESS || defaultAddresses.escrowMilestones || "",
+    implementerRegistry: process.env.IMPLEMENTER_REGISTRY_ADDRESS || defaultAddresses.implementerRegistry || "",
 };
 
 // ===== RPC URLs =====

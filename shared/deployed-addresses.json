@@ -1,0 +1,7 @@
+{
+  "network": "sepolia",
+  "chainId": 11155111,
+  "petitionRegistry": "0x7D377A56642aaE04A883A2f99F876F5b5142399e",
+  "implementerRegistry": "0x5ce5bd6b6E6bDDFC71C1a4d64bc159E28bf909bf",
+  "escrowMilestones": "0x1a7a1e26dc55063f6b485619B7BAa86a222EFd5D"
+}
