@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useAccount, useChainId, useWriteContract } from "wagmi";
+import { useAccount, useChainId, usePublicClient, useWriteContract } from "wagmi";
 import { sepolia } from "wagmi/chains";
 import { parseEther } from "viem";
 import { WalletStatus } from "@/components/WalletStatus";
@@ -15,6 +15,7 @@ export default function PetitionDetailPage() {
   const petitionId = useMemo(() => String(params?.id || ""), [params]);
   const { isConnected } = useAccount();
   const chainId = useChainId();
+  const publicClient = usePublicClient();
   const { writeContractAsync } = useWriteContract();
 
   const [petition, setPetition] = useState<Petition | null>(null);
@@ -32,13 +33,67 @@ export default function PetitionDetailPage() {
 
   useEffect(() => {
     if (!petitionId) return;
-    fetchPetition(petitionId)
-      .then((data) => {
+    let ignore = false;
+
+    const load = async () => {
+      try {
+        const data = await fetchPetition(petitionId);
+        if (ignore) return;
         setPetition(data.petition);
         setTimeline(data.timeline || []);
-      })
-      .catch((err: Error) => setError(err.message || "Failed to load petition"));
-  }, [petitionId]);
+        setError(null);
+      } catch (err) {
+        if (ignore) return;
+        if (!publicClient || !CONTRACT_ADDRESSES.petitionRegistry) {
+          const message = err instanceof Error ? err.message : "Failed to load petition";
+          setError(message);
+          return;
+        }
+
+        try {
+          const result = await publicClient.readContract({
+            address: CONTRACT_ADDRESSES.petitionRegistry,
+            abi: ABIS.petitionRegistry,
+            functionName: "getPetition",
+            args: [BigInt(petitionId)],
+          });
+
+          const [creator, contentCID, createdAt, supportCount] = result as readonly [
+            string,
+            string,
+            bigint,
+            bigint,
+          ];
+
+          const supporterCount = Number(supportCount);
+          const createdAtNumber = Number(createdAt);
+
+          setPetition({
+            petitionId,
+            creator,
+            contentCID,
+            status: supporterCount > 0 ? "active" : "created",
+            supporterCount,
+            totalFunded: "0",
+            milestones: [],
+            createdAt: createdAtNumber,
+            lastUpdated: createdAtNumber,
+          });
+          setTimeline([]);
+          setError(null);
+        } catch {
+          const message = err instanceof Error ? err.message : "Failed to load petition";
+          setError(message);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      ignore = true;
+    };
+  }, [petitionId, publicClient]);
 
   async function runTx(task: () => Promise<void>) {
     if (!isConnected) {
