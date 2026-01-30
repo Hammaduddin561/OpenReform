@@ -20,7 +20,7 @@ Create a petition with IPFS-hosted content and on-chain CID, support and fund it
 Objective: Build minimal contracts for petitions, escrow + milestones, implementers, and approvals, with events required by the indexer and UI.
 
 Scope
-- MVP must-have: Petition creation (CID stored), support (no double support), funding in escrow, implementer acceptance, milestones + proof CID submission, attestor approval, milestone payout, refunds if deadline not met.
+- MVP must-have: Petition creation (CID stored), support (no double support), ETH-only funding in escrow, implementer acceptance, milestones + proof CID submission, attestor approval, milestone payout, refunds if deadline not met.
 - Nice-to-have: Stake/reputation counters, petition threshold rules, multi-attestor approval.
 
 Milestones (very granular)
@@ -275,9 +275,9 @@ Final checkpoint: 2–3 minute demo success.
 - Approvals/disputes too hard: Fallback to team multisig/admin as attestor.
 
 ## 9) Questions / Decisions Needed
-- Token choice: ETH-only escrow or ERC20 support?
-- Approval model: single admin, multisig, or simple DAO vote?
-- Petition thresholds: support-only, funding-only, or both?
+- Decision set for MVP: ETH-only escrow (simplest and fastest to ship).
+- Decision set for MVP: No minimum thresholds; support is a signal, and funding can start immediately.
+- Approval model (open): who can approve milestone proofs to release escrow payouts? Options: single admin, team multisig, or simple DAO vote. This controls who can finalize milestone completion.
 - Any hackathon constraints discovered in official docs (RPC limits, demo requirements)?
 - IPFS pinning provider selection (Pinata vs web3.storage vs others)?
 
