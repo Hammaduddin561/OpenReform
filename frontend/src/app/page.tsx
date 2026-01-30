@@ -3,29 +3,98 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { WalletStatus } from "@/components/WalletStatus";
+import { ABIS, CONTRACT_ADDRESSES } from "@/lib/contracts";
 import { fetchPetitions, type Petition } from "@/lib/api";
+import { usePublicClient } from "wagmi";
 
 export default function Home() {
   const [petitions, setPetitions] = useState<Petition[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const publicClient = usePublicClient();
 
   useEffect(() => {
     let ignore = false;
 
-    fetchPetitions()
-      .then((data) => {
+    const load = async () => {
+      try {
+        const data = await fetchPetitions();
         if (ignore) return;
-        setPetitions(data.petitions || []);
-      })
-      .catch((err) => {
+        if (data.petitions && data.petitions.length > 0) {
+          setPetitions(data.petitions);
+          setError(null);
+          return;
+        }
+      } catch (err) {
         if (ignore) return;
-        setError(err.message || "Failed to load petitions");
-      });
+        if (err instanceof Error) setError(err.message);
+      }
+
+      if (!publicClient || !CONTRACT_ADDRESSES.petitionRegistry) {
+        return;
+      }
+
+      try {
+        const total = await publicClient.readContract({
+          address: CONTRACT_ADDRESSES.petitionRegistry,
+          abi: ABIS.petitionRegistry,
+          functionName: "totalPetitions",
+          args: [],
+        });
+        const totalNumber = Number(total);
+        if (!Number.isFinite(totalNumber) || totalNumber === 0) {
+          return;
+        }
+
+        const limit = Math.min(totalNumber, 10);
+        const results: Petition[] = [];
+
+        for (let id = totalNumber; id >= 1 && results.length < limit; id -= 1) {
+          const res = await publicClient.readContract({
+            address: CONTRACT_ADDRESSES.petitionRegistry,
+            abi: ABIS.petitionRegistry,
+            functionName: "getPetition",
+            args: [BigInt(id)],
+          });
+          const [creator, contentCID, createdAt, supportCount] = res as readonly [
+            string,
+            string,
+            bigint,
+            bigint,
+          ];
+
+          const supporterCount = Number(supportCount);
+          const createdAtNumber = Number(createdAt);
+
+          results.push({
+            petitionId: id.toString(),
+            creator,
+            contentCID,
+            status: supporterCount > 0 ? "active" : "created",
+            supporterCount,
+            totalFunded: "0",
+            milestones: [],
+            createdAt: createdAtNumber,
+            lastUpdated: createdAtNumber,
+          });
+        }
+
+        if (ignore) return;
+        if (results.length > 0) {
+          setPetitions(results);
+          setError(null);
+        }
+      } catch (err) {
+        if (ignore) return;
+        if (err instanceof Error) setError(err.message);
+      }
+    };
+
+    load();
 
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [publicClient]);
 
   return (
     <main className="px-6 py-10 lg:px-16">
