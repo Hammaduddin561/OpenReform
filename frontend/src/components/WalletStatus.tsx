@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 
 export function WalletStatus() {
@@ -9,6 +9,14 @@ export function WalletStatus() {
   const { disconnect } = useDisconnect();
   const [error, setError] = useState<string | null>(null);
 
+  const subscribe = () => () => {};
+  const isMounted = useSyncExternalStore(subscribe, () => true, () => false);
+  const hasProvider = useSyncExternalStore(
+    subscribe,
+    () => typeof window !== "undefined" && Boolean((window as Window & { ethereum?: unknown }).ethereum),
+    () => false,
+  );
+
   const injectedConnector = useMemo(
     () => connectors.find((item) => item.id === "injected") ?? connectors[0],
     [connectors],
@@ -16,6 +24,20 @@ export function WalletStatus() {
   const providerMissing =
     error?.toLowerCase().includes("provider not found") ||
     error?.toLowerCase().includes("connector not found");
+
+  if (!isMounted) {
+    return (
+      <div className="flex flex-col items-start gap-2">
+        <button
+          type="button"
+          disabled
+          className="rounded-full bg-white/70 px-5 py-2 text-xs uppercase tracking-[0.2em] text-black"
+        >
+          Connect Wallet
+        </button>
+      </div>
+    );
+  }
 
   if (isConnected) {
     return (
@@ -65,6 +87,11 @@ export function WalletStatus() {
         >
           Install MetaMask
         </a>
+      )}
+      {!providerMissing && !hasProvider && (
+        <span className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
+          Provider unavailable
+        </span>
       )}
       {error && <span className="text-xs text-red-200">{error}</span>}
     </div>
