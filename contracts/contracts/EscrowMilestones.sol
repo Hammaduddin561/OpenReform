@@ -8,6 +8,10 @@ interface IPetitionRegistry {
     returns (address creator, string memory contentCID, uint256 createdAt, uint256 supportCount);
 }
 
+interface IImplementerRegistry {
+  function getProfile(address implementer) external view returns (string memory);
+}
+
 contract EscrowMilestones {
   event Funded(uint256 petitionId, address funder, uint256 amount, uint256 timestamp);
   event ImplementerAccepted(uint256 petitionId, address implementer, string profileCID, uint256 timestamp);
@@ -44,6 +48,7 @@ contract EscrowMilestones {
   }
 
   IPetitionRegistry public immutable petitionRegistry;
+  IImplementerRegistry public immutable implementerRegistry;
   uint256 public immutable votingWindow;
 
   mapping(uint256 => PetitionEscrow) private _escrows;
@@ -57,10 +62,12 @@ contract EscrowMilestones {
 
   uint256 private _locked = 1;
 
-  constructor(address petitionRegistryAddress, uint256 votingWindowSeconds) {
+  constructor(address petitionRegistryAddress, address implementerRegistryAddress, uint256 votingWindowSeconds) {
     require(petitionRegistryAddress != address(0), "INVALID_REGISTRY");
+    require(implementerRegistryAddress != address(0), "INVALID_IMPLEMENTER_REGISTRY");
     require(votingWindowSeconds > 0, "INVALID_WINDOW");
     petitionRegistry = IPetitionRegistry(petitionRegistryAddress);
+    implementerRegistry = IImplementerRegistry(implementerRegistryAddress);
     votingWindow = votingWindowSeconds;
   }
 
@@ -113,11 +120,13 @@ contract EscrowMilestones {
     emit Funded(petitionId, msg.sender, msg.value, block.timestamp);
   }
 
-  function acceptImplementer(uint256 petitionId, string calldata profileCID) external {
+  function acceptImplementer(uint256 petitionId) external {
     PetitionEscrow storage escrow = _escrows[petitionId];
     require(escrow.initialized, "NOT_INITIALIZED");
     require(escrow.implementer == address(0), "IMPLEMENTER_SET");
-    require(bytes(profileCID).length > 0, "EMPTY_CID");
+
+    string memory profileCID = implementerRegistry.getProfile(msg.sender);
+    require(bytes(profileCID).length > 0, "PROFILE_NOT_SET");
 
     escrow.implementer = msg.sender;
 

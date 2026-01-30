@@ -13,6 +13,7 @@ async function increaseTime(seconds: number) {
 describe("EscrowMilestones", () => {
   it("funds, votes, finalizes, and pays out", async () => {
     const petitionRegistry = await viem.deployContract("PetitionRegistry");
+    const implementerRegistry = await viem.deployContract("ImplementerRegistry");
     const publicClient = await viem.getPublicClient();
     const [creator, funder, implementer] = await viem.getWalletClients();
 
@@ -20,6 +21,7 @@ describe("EscrowMilestones", () => {
 
     const escrow = await viem.deployContract("EscrowMilestones", [
       petitionRegistry.address,
+      implementerRegistry.address,
       1n,
     ]);
 
@@ -37,7 +39,13 @@ describe("EscrowMilestones", () => {
     );
 
     await viem.assertions.emit(
-      escrow.write.acceptImplementer([1n, "profile-cid"], { account: implementer.account }),
+      implementerRegistry.write.setProfile(["profile-cid"], { account: implementer.account }),
+      implementerRegistry,
+      "ImplementerProfileSet",
+    );
+
+    await viem.assertions.emit(
+      escrow.write.acceptImplementer([1n], { account: implementer.account }),
       escrow,
       "ImplementerAccepted",
     );
@@ -73,6 +81,7 @@ describe("EscrowMilestones", () => {
 
   it("allows refunds after deadline when no payouts", async () => {
     const petitionRegistry = await viem.deployContract("PetitionRegistry");
+    const implementerRegistry = await viem.deployContract("ImplementerRegistry");
     const publicClient = await viem.getPublicClient();
     const [creator, funder] = await viem.getWalletClients();
 
@@ -80,6 +89,7 @@ describe("EscrowMilestones", () => {
 
     const escrow = await viem.deployContract("EscrowMilestones", [
       petitionRegistry.address,
+      implementerRegistry.address,
       1n,
     ]);
 
