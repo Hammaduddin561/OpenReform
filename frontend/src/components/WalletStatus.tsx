@@ -1,12 +1,15 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useChainId, useConnect, useDisconnect, useSwitchChain } from "wagmi";
+import { sepolia } from "wagmi/chains";
 
 export function WalletStatus() {
   const { address, isConnected } = useAccount();
+  const chainId = useChainId();
   const { connectors, connectAsync, isPending } = useConnect();
   const { disconnect } = useDisconnect();
+  const { switchChainAsync, isPending: isSwitching } = useSwitchChain();
   const [error, setError] = useState<string | null>(null);
 
   const subscribe = () => () => {};
@@ -41,17 +44,41 @@ export function WalletStatus() {
 
   if (isConnected) {
     return (
-      <div className="flex items-center gap-3">
-        <span className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
-          {address?.slice(0, 6)}...{address?.slice(-4)}
-        </span>
-        <button
-          type="button"
-          onClick={() => disconnect()}
-          className="rounded-full border border-white/20 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white hover:border-white/50"
-        >
-          Disconnect
-        </button>
+      <div className="flex flex-col items-start gap-3">
+        <div className="flex items-center gap-3">
+          <span className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
+            {address?.slice(0, 6)}...{address?.slice(-4)}
+          </span>
+          <button
+            type="button"
+            onClick={() => disconnect()}
+            className="rounded-full border border-white/20 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white hover:border-white/50"
+          >
+            Disconnect
+          </button>
+        </div>
+        {chainId !== sepolia.id && (
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await switchChainAsync({ chainId: sepolia.id });
+              } catch (err) {
+                if (err instanceof Error) setError(err.message);
+              }
+            }}
+            className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-black"
+            disabled={isSwitching}
+          >
+            {isSwitching ? "Switching..." : "Switch to Sepolia"}
+          </button>
+        )}
+        {chainId === sepolia.id && (
+          <span className="text-xs uppercase tracking-[0.2em] text-emerald-200/80">
+            Sepolia connected
+          </span>
+        )}
+        {error && <span className="text-xs text-red-200">{error}</span>}
       </div>
     );
   }

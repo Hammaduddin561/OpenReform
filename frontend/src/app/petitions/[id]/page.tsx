@@ -3,10 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import {
-  useAccount,
-  useWriteContract,
-} from "wagmi";
+import { useAccount, useChainId, useWriteContract } from "wagmi";
+import { sepolia } from "wagmi/chains";
 import { parseEther } from "viem";
 import { WalletStatus } from "@/components/WalletStatus";
 import { fetchPetition, pinJson, type Petition, type TimelineEvent } from "@/lib/api";
@@ -16,6 +14,7 @@ export default function PetitionDetailPage() {
   const params = useParams();
   const petitionId = useMemo(() => String(params?.id || ""), [params]);
   const { isConnected } = useAccount();
+  const chainId = useChainId();
   const { writeContractAsync } = useWriteContract();
 
   const [petition, setPetition] = useState<Petition | null>(null);
@@ -44,6 +43,10 @@ export default function PetitionDetailPage() {
   async function runTx(task: () => Promise<void>) {
     if (!isConnected) {
       setStatus("Connect your wallet first.");
+      return;
+    }
+    if (chainId !== sepolia.id) {
+      setStatus("Please switch your wallet to Sepolia.");
       return;
     }
     try {

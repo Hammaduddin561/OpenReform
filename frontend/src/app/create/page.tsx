@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useAccount, usePublicClient, useWriteContract } from "wagmi";
+import { useAccount, useChainId, usePublicClient, useWriteContract } from "wagmi";
+import { sepolia } from "wagmi/chains";
 import { decodeEventLog, parseEther } from "viem";
 import { WalletStatus } from "@/components/WalletStatus";
 import { pinJson } from "@/lib/api";
@@ -10,6 +11,7 @@ import { ABIS, CONTRACT_ADDRESSES } from "@/lib/contracts";
 
 export default function CreatePetitionPage() {
   const { isConnected } = useAccount();
+  const chainId = useChainId();
   const publicClient = usePublicClient();
   const { writeContractAsync } = useWriteContract();
 
@@ -29,6 +31,10 @@ export default function CreatePetitionPage() {
 
     if (!CONTRACT_ADDRESSES.petitionRegistry || !CONTRACT_ADDRESSES.escrowMilestones) {
       setStatus("Contract addresses not configured.");
+      return;
+    }
+    if (chainId !== sepolia.id) {
+      setStatus("Please switch your wallet to Sepolia.");
       return;
     }
 
