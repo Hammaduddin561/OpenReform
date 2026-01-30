@@ -1,11 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { WalletStatus } from "@/components/WalletStatus";
+import { useEffect, useMemo, useState } from "react";
+import { Header } from "@/components/Header";
 import { ABIS, CONTRACT_ADDRESSES } from "@/lib/contracts";
 import { fetchPetitions, type Petition } from "@/lib/api";
 import { usePublicClient } from "wagmi";
+
+const statusStyles: Record<string, string> = {
+  active: "badge badge-success",
+  completed: "badge badge-success",
+  refunded: "badge badge-danger",
+  created: "badge",
+  accepted: "badge",
+  in_progress: "badge",
+};
 
 export default function Home() {
   const [petitions, setPetitions] = useState<Petition[]>([]);
@@ -45,7 +54,7 @@ export default function Home() {
           return;
         }
 
-        const limit = Math.min(totalNumber, 10);
+        const limit = Math.min(totalNumber, 12);
         const results: Petition[] = [];
 
         for (let id = totalNumber; id >= 1 && results.length < limit; id -= 1) {
@@ -96,80 +105,106 @@ export default function Home() {
     };
   }, [publicClient]);
 
-  return (
-    <main className="px-6 py-10 lg:px-16">
-      <header className="glass flex flex-col gap-6 rounded-[32px] px-8 py-10 lg:flex-row lg:items-center lg:justify-between">
-        <div className="space-y-4">
-          <span className="tag">OpenReform</span>
-          <h1 className="section-title max-w-2xl font-semibold">
-            Petition → Fund → Deliver. Public milestones, on-chain voting.
-          </h1>
-          <p className="subtle max-w-xl text-base leading-relaxed">
-            Launch a petition, collect ETH into escrow, and release milestone
-            payouts once funders vote approval. Every step stays transparent on
-            Sepolia.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Link
-              href="/create"
-              className="rounded-full bg-amber-300 px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-black"
-            >
-              Create Petition
-            </Link>
-            <a
-              className="rounded-full border border-white/20 px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white"
-              href="https://sepolia.etherscan.io"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Sepolia Explorer
-            </a>
-          </div>
-        </div>
-        <div className="flex flex-col items-start gap-3">
-          <WalletStatus />
-          <div className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
-            Indexer: {error ? "offline" : "online"}
-          </div>
-        </div>
-      </header>
+  const petitionCount = useMemo(() => petitions.length, [petitions]);
 
-      <section className="mt-12">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Live petitions</h2>
-          <span className="subtle text-sm">
-            {petitions.length} active record{petitions.length === 1 ? "" : "s"}
-          </span>
-        </div>
-        {error && (
-          <p className="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-            {error}
-          </p>
-        )}
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
-          {petitions.map((petition) => (
-            <Link
-              key={petition.petitionId}
-              href={`/petitions/${petition.petitionId}`}
-              className="card p-6 transition hover:-translate-y-1 hover:border-amber-200/60"
-            >
-              <div className="flex items-center justify-between">
-                <span className="tag">#{petition.petitionId}</span>
-                <span className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
-                  {petition.status}
-                </span>
-              </div>
-              <p className="mt-4 break-words text-sm text-white/70">
-                CID: {petition.contentCID}
+  return (
+    <div className="min-h-screen bg-[#0b0f1a]">
+      <Header />
+      <main className="container-page pt-32 pb-16">
+        <section className="card p-8 md:p-10">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-4">
+              <span className="badge">Decentralized petitions</span>
+              <h1 className="section-title">Turn Petitions into Action</h1>
+              <p className="subtle max-w-xl text-base">
+                Launch a petition, fund milestones, and unlock payouts only when
+                funders approve progress on-chain.
               </p>
-              <div className="mt-6 flex flex-wrap gap-4 text-xs text-white/70">
-                <span>Supporters: {petition.supporterCount}</span>
-                <span>Funded: {Number(petition.totalFunded) / 1e18} ETH</span>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/create" className="btn-primary">
+                  Create Petition
+                </Link>
+                <Link href="/demo" className="btn-secondary">
+                  Demo Path
+                </Link>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-    </main>
+            </div>
+            <div className="card card-muted p-6 text-sm">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#6B7280]">
+                Live petitions
+              </p>
+              <p className="mt-3 text-3xl font-bold text-white">
+                {petitionCount}
+              </p>
+              <p className="subtle mt-2 text-xs">
+                Indexed from Sepolia + on-chain fallback
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="text-xl font-semibold">Petitions dashboard</h2>
+            <span className="subtle text-sm">
+              {petitionCount} active record{petitionCount === 1 ? "" : "s"}
+            </span>
+          </div>
+
+          {error && (
+            <p className="mt-4 rounded-lg border border-[#EF4444]/40 bg-[#1f2937] px-4 py-3 text-sm text-[#EF4444]">
+              {error}
+            </p>
+          )}
+
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {petitions.map((petition) => (
+              <div key={petition.petitionId} className="card p-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-white">
+                    Petition #{petition.petitionId}
+                  </span>
+                  <span className={statusStyles[petition.status] || "badge"}>
+                    {petition.status}
+                  </span>
+                </div>
+                <p className="subtle mt-4 text-sm">
+                  CID: {petition.contentCID.slice(0, 36)}...
+                </p>
+                <div className="mt-6 grid gap-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="subtle">Supporters</span>
+                    <span>{petition.supporterCount}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="subtle">Funded</span>
+                    <span>{Number(petition.totalFunded) / 1e18} ETH</span>
+                  </div>
+                </div>
+                <div className="mt-6 flex gap-3">
+                  <Link
+                    href={`/petitions/${petition.petitionId}`}
+                    className="btn-primary"
+                  >
+                    View
+                  </Link>
+                  <Link
+                    href={`/petitions/${petition.petitionId}`}
+                    className="btn-secondary"
+                  >
+                    Support
+                  </Link>
+                </div>
+              </div>
+            ))}
+            {petitionCount === 0 && (
+              <div className="card p-6 text-sm text-[#6B7280]">
+                No petitions indexed yet. Create the first one.
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+    </div>
   );
 }

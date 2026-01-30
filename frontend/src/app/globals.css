@@ -1,64 +1,185 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0d0f14;
-  --foreground: #f2f5ff;
-  --muted: #99a1b3;
-  --accent: #f6b93b;
-  --accent-2: #f56a5b;
-  --surface: rgba(15, 18, 28, 0.9);
-  --surface-2: rgba(255, 255, 255, 0.06);
+  --background: #0b0f1a;
+  --surface: #111827;
+  --surface-muted: #1f2937;
+  --border: #243043;
+  --primary: #2563eb;
+  --success: #10b981;
+  --danger: #ef4444;
+  --text-primary: #f9fafb;
+  --text-secondary: #6b7280;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-foreground: var(--text-primary);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
-  background: radial-gradient(circle at top left, rgba(245, 106, 91, 0.18), transparent 45%),
-    radial-gradient(circle at 30% 20%, rgba(246, 185, 59, 0.2), transparent 40%),
-    radial-gradient(circle at 80% 0%, rgba(61, 103, 255, 0.2), transparent 45%),
-    var(--background);
-  color: var(--foreground);
+  background: var(--background);
+  color: var(--text-primary);
   font-family: var(--font-sans), system-ui, sans-serif;
   min-height: 100vh;
+  padding-top: 72px;
 }
 
-main {
-  min-height: 100vh;
+a {
+  color: inherit;
 }
 
-.glass {
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(14px);
+.container-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .container-page {
+    padding: 0 24px;
+  }
 }
 
 .card {
-  background: var(--surface-2);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-.tag {
-  border: 1px solid rgba(255, 255, 255, 0.15);
+.card-muted {
+  background: var(--surface-muted);
+}
+
+.badge {
   border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 10px;
-  letter-spacing: 0.25em;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.badge-success {
+  color: var(--success);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.badge-danger {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.btn-secondary {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.btn-success {
+  background: var(--success);
+  color: #0b0f1a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.input-field,
+textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #0f1625;
+  color: var(--text-primary);
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.input-field::placeholder,
+textarea::placeholder {
+  color: var(--text-secondary);
 }
 
 .section-title {
-  font-size: clamp(2.2rem, 4vw, 3.6rem);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .subtle {
-  color: var(--muted);
+  color: var(--text-secondary);
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background: #1f2937;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 999px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 24, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 50;
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
 }

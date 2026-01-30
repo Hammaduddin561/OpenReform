@@ -31,11 +31,7 @@ export function WalletStatus() {
   if (!isMounted) {
     return (
       <div className="flex flex-col items-start gap-2">
-        <button
-          type="button"
-          disabled
-          className="rounded-full bg-white/70 px-5 py-2 text-xs uppercase tracking-[0.2em] text-black"
-        >
+        <button type="button" disabled className="btn-secondary">
           Connect Wallet
         </button>
       </div>
@@ -44,16 +40,12 @@ export function WalletStatus() {
 
   if (isConnected) {
     return (
-      <div className="flex flex-col items-start gap-3">
+      <div className="flex flex-col items-start gap-2">
         <div className="flex items-center gap-3">
-          <span className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
+          <span className="text-xs uppercase tracking-[0.2em] text-[#6B7280]">
             {address?.slice(0, 6)}...{address?.slice(-4)}
           </span>
-          <button
-            type="button"
-            onClick={() => disconnect()}
-            className="rounded-full border border-white/20 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white hover:border-white/50"
-          >
+          <button type="button" onClick={() => disconnect()} className="btn-secondary">
             Disconnect
           </button>
         </div>
@@ -67,18 +59,18 @@ export function WalletStatus() {
                 if (err instanceof Error) setError(err.message);
               }
             }}
-            className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-black"
+            className="btn-primary"
             disabled={isSwitching}
           >
             {isSwitching ? "Switching..." : "Switch to Sepolia"}
           </button>
         )}
         {chainId === sepolia.id && (
-          <span className="text-xs uppercase tracking-[0.2em] text-emerald-200/80">
+          <span className="text-xs uppercase tracking-[0.2em] text-[#10B981]">
             Sepolia connected
           </span>
         )}
-        {error && <span className="text-xs text-red-200">{error}</span>}
+        {error && <span className="text-xs text-[#EF4444]">{error}</span>}
       </div>
     );
   }
@@ -101,7 +93,7 @@ export function WalletStatus() {
           }
         }}
         disabled={isPending}
-        className="rounded-full bg-white px-5 py-2 text-xs uppercase tracking-[0.2em] text-black hover:bg-amber-200"
+        className="btn-primary"
       >
         {isPending ? "Connecting..." : "Connect Wallet"}
       </button>
@@ -110,17 +102,17 @@ export function WalletStatus() {
           href="https://metamask.io/download/"
           target="_blank"
           rel="noreferrer"
-          className="text-xs uppercase tracking-[0.2em] text-amber-200/80"
+          className="text-xs uppercase tracking-[0.2em] text-[#6B7280]"
         >
           Install MetaMask
         </a>
       )}
       {!providerMissing && !hasProvider && (
-        <span className="text-xs uppercase tracking-[0.2em] text-amber-200/80">
+        <span className="text-xs uppercase tracking-[0.2em] text-[#6B7280]">
           Provider unavailable
         </span>
       )}
-      {error && <span className="text-xs text-red-200">{error}</span>}
+      {error && <span className="text-xs text-[#EF4444]">{error}</span>}
     </div>
   );
 }
