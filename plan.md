@@ -62,7 +62,7 @@ Milestones (very granular)
    - Dependencies: PetitionRegistry + EscrowMilestones linkage.
 
 7) Task: Implement approval voting for milestone proofs (simple on-chain vote).
-   - Output/Deliverable: Approval mechanism to approve milestone proofs via on-chain vote.
+   - Output/Deliverable: Approval mechanism to approve milestone proofs via on-chain vote with the MVP rules in Section 9.
    - Verification/Acceptance: Tests show MilestoneApproved triggers payout when vote passes.
    - Time estimate: 90–120 min
    - Dependencies: Milestone submission flow in EscrowMilestones.
@@ -272,13 +272,20 @@ Final checkpoint: 2–3 minute demo success.
 ## 8) Risk Register + Fallbacks
 - IPFS pinning fails: Fallback to local JSON + hashes; display as unverified.
 - Indexer unstable: Fallback to frontend direct event reads.
-- Approvals/disputes too hard: Fallback to team multisig/admin as attestor.
+- On-chain voting too complex to stabilize in time: Fallback to single admin attestor for milestone approvals (only if needed for demo).
 
 ## 9) Questions / Decisions Needed
-- Decision set for MVP: ETH-only escrow (simplest and fastest to ship).
-- Decision set for MVP: No minimum thresholds; support is a signal, and funding can start immediately.
-- Decision set for MVP: Use on-chain voting for milestone approvals (details below still needed).
-- Voting details (required to implement): who can vote (supporters, funders, or any wallet)? what is the passing threshold (simple majority, quorum + majority)? what is the voting window length? how to handle ties or low participation?
+No open questions. Decisions locked for MVP:
+- Token choice: ETH-only escrow.
+- Thresholds: No minimum thresholds; support is a signal and funding can start immediately.
+- Approval model: On-chain voting for milestone approvals.
+- Voter eligibility: Funders of the petition.
+- Vote weight: 1 address = 1 vote (no funding-weighted votes for MVP).
+- Passing rule: Simple majority of votes cast within the voting window; no quorum.
+- Voting window: 24 hours from milestone proof submission.
+- Tie/low participation: Treat as failed; implementer may resubmit proof once.
+- IPFS pinning provider: Pinata (verify latest API and auth flow in official docs).
+- Hackathon constraints: None reported.
 - Any hackathon constraints discovered in official docs (RPC limits, demo requirements)?
 - IPFS pinning provider selection (Pinata vs web3.storage vs others)?
 
