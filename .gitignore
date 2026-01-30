@@ -1,0 +1,14 @@
+﻿# Node
+node_modules/
+
+# Hardhat
+contracts/node_modules/
+contracts/artifacts/
+contracts/cache/
+
+# Env
+.env
+.env.*
+
+# OS
+.DS_Store

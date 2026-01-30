@@ -284,6 +284,7 @@ No open questions. Decisions locked for MVP:
 - Passing rule: Simple majority of votes cast within the voting window; no quorum.
 - Voting window: 24 hours from milestone proof submission.
 - Tie/low participation: Treat as failed; implementer may resubmit proof once.
+- Refunds rule (MVP): Allowed only if deadline has passed and no milestone payouts were released.
 - IPFS pinning provider: Pinata (verify latest API and auth flow in official docs).
 - Hackathon constraints: None reported.
 - Any hackathon constraints discovered in official docs (RPC limits, demo requirements)?
