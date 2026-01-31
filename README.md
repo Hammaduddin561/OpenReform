@@ -4,7 +4,7 @@
 
 OpenReform is a decentralized protocol that transforms petitions from passive signatures into verifiable action. It bridges the gap between raising demands and delivering results by enforcing strict accountability. Instead of "donate and pray," OpenReform uses **smart contract escrow** to lock resources, releasing them only when specific milestones are achieved.
 
-Implementers must submit proof of their work—verified permanently on the **InterPlanetary File System (IPFS)**—before any funds are unlocked. This creates an immutable, transparent timeline of progress. From local civic repairs to large-scale initiatives, OpenReform ensures that support translates directly into **guaranteed execution**.
+Implementers must submit proof of their work verified permanently on the **InterPlanetary File System (IPFS)** before any funds are unlocked. This creates an immutable, transparent timeline of progress. From local civic repairs to large scale initiatives, OpenReform ensures that support translates directly into **guaranteed execution**.
 
 [![Ethereum](https://img.shields.io/badge/Ethereum-Sepolia-blueviolet)](https://sepolia.etherscan.io/)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.29-blue)](https://docs.soliditylang.org/en/v0.8.29/)
@@ -315,8 +315,8 @@ OpenReform/
 
 ## 📄 License
 
-Apache License 2.0 - see [LICENSE](LICENSE) for details.
+Apache License 2.0: see [LICENSE](LICENSE) for details.
 
 ---
 
-**OpenReform** — Empowering civic action through decentralized accountability.
+**OpenReform**, Empowering civic action through decentralized accountability.
