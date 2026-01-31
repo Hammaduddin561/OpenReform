@@ -16,7 +16,7 @@
         "petition"
     ],
     "author": "Hammaduddin561",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "dependencies": {
         "express": "^4.18.2",
         "cors": "^2.8.5",

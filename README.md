@@ -1,13 +1,17 @@
 ﻿# 🗳️ OpenReform
 
-**A Decentralized Petition-to-Action Platform on Ethereum**
+**Petition + Accountability + Execution**
 
-OpenReform enables supporters to fund petitions into escrow with milestone-based payouts to implementers. Petition content and proofs live on IPFS, and an indexer-driven timeline shows progress from creation to payouts.
+OpenReform is a decentralized protocol that transforms petitions from passive signatures into verifiable action. It bridges the gap between raising demands and delivering results by enforcing strict accountability. Instead of "donate and pray," OpenReform uses **smart contract escrow** to lock resources, releasing them only when specific milestones are achieved.
 
-![Ethereum](https://img.shields.io/badge/Ethereum-Sepolia-blueviolet)
-![Solidity](https://img.shields.io/badge/Solidity-0.8.29-blue)
-![Node.js](https://img.shields.io/badge/Node.js-20+-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+Implementers must submit proof of their work—verified permanently on the **InterPlanetary File System (IPFS)**—before any funds are unlocked. This creates an immutable, transparent timeline of progress. From local civic repairs to large-scale initiatives, OpenReform ensures that support translates directly into **guaranteed execution**.
+
+[![Ethereum](https://img.shields.io/badge/Ethereum-Sepolia-blueviolet)](https://sepolia.etherscan.io/)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.29-blue)](https://docs.soliditylang.org/en/v0.8.29/)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-green)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
+![OpenReform Dashboard](doc_assets/dashboard.png)
 
 ---
 
@@ -311,8 +315,8 @@ OpenReform/
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+Apache License 2.0 - see [LICENSE](LICENSE) for details.
 
 ---
 
-Built with ❤️ for hackathon
+**OpenReform** — Empowering civic action through decentralized accountability.

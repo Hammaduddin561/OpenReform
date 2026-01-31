@@ -1,10 +1,9 @@
 import "dotenv/config";
-import hardhatToolboxViem from "@nomicfoundation/hardhat-toolbox-viem";
-import "@nomicfoundation/hardhat-ethers";
+import "@nomicfoundation/hardhat-toolbox-viem"; // Keep this if project uses it
+import "@nomicfoundation/hardhat-ethers"; // Add this back
 import { defineConfig } from "hardhat/config";
 
 export default defineConfig({
-  plugins: [hardhatToolboxViem],
   solidity: {
     version: "0.8.29",
   },
