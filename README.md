@@ -6,10 +6,10 @@ OpenReform is a decentralized protocol that transforms petitions from passive si
 
 Implementers must submit proof of their work verified permanently on the **InterPlanetary File System (IPFS)** before any funds are unlocked. This creates an immutable, transparent timeline of progress. From local civic repairs to large scale initiatives, OpenReform ensures that support translates directly into **guaranteed execution**.
 
-[![Ethereum](https://img.shields.io/badge/Ethereum-Sepolia-blueviolet)](https://sepolia.etherscan.io/)
-[![Solidity](https://img.shields.io/badge/Solidity-0.8.29-blue)](https://docs.soliditylang.org/en/v0.8.29/)
-[![Node.js](https://img.shields.io/badge/Node.js-20+-green)](https://nodejs.org/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Ethereum](https://img.shields.io/badge/Ethereum-Sepolia-blueviolet?style=flat-square)](https://sepolia.etherscan.io/)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.29-blue?style=flat-square)](https://docs.soliditylang.org/en/v0.8.29/)
+[![Node.js](https://img.shields.io/badge/Node.js-20+-green?style=flat-square)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](LICENSE)
 
 ![OpenReform Dashboard](doc_assets/dashboard.png)
 
